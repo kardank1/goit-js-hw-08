@@ -64,17 +64,47 @@ const images = [
     },
   ];
 
-  const gallery = document.querySelector(".gallery");
-  const liTemp = [];
-  let imgTemp;
+const gallery = document.querySelector(".gallery");
+const liTemps = [];
+
+for( let i = 0; i < images.length; i++){
+  liTemps.push(`<li class="gallery-item">
+                  <a class="gallery-link" href="${images[i].original}" download=false>
+                    <img
+                      class="gallery-image"
+                      src="${images[i].preview}"
+                      data-source="${images[i].original}"
+                      alt="${images[i].description}"
+                      return false
+                  />
+                </a>
+              </li>`)
+}
+for(let liTemp of liTemps){
+  gallery.insertAdjacentHTML('afterBegin', liTemp);
+}
+
+gallery.addEventListener("click", inConsole);
+
+
+function inConsole(event){
+  event.preventDefault()
+  if(event.target.dataset.source){
+    const instance = basicLightbox.create(`
+    <img src="${event.target.dataset.source}" width="800" height="600">
+    `)
+
+    instance.show()
+
   
-  for( let i = 0; i < images.length; i++){
-    liTemp.push(document.createElement("li"));
-    imgTemp = document.createElement("img");
-    liTemp[i].setAttribute("class", "gallery-item");
-    imgTemp.setAttribute("src", images[i].url);
-    imgTemp.setAttribute("alt", images[i].alt);
-    imgTemp.setAttribute("class", "gallery-image");
-    liTemp[i].insertAdjacentElement("afterbegin", imgTemp);
+    document.addEventListener("keydown", (e) => {
+      if (e.code == "Escape") {
+        instance.close();
+       }
+    });
   }
-  gallery.append(...liTemp);
+    
+}
+
+
+
