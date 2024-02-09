@@ -65,46 +65,54 @@ const images = [
   ];
 
 const gallery = document.querySelector(".gallery");
-const liTemps = [];
+const liTemps = images.map(image => {
+  return `<li class="gallery-item">
+            <a class="gallery-link" href="${image.original}">
+              <img
+                class="gallery-image"
+                src="${image.preview}"
+                data-source="${image.original}"
+                alt="${image.description}"
+              />
+            </a>
+          </li>`;
+})
 
-for( let i = 0; i < images.length; i++){
-  liTemps.push(`<li class="gallery-item">
-                  <a class="gallery-link" href="${images[i].original}" download=false>
-                    <img
-                      class="gallery-image"
-                      src="${images[i].preview}"
-                      data-source="${images[i].original}"
-                      alt="${images[i].description}"
-                      return false
-                  />
-                </a>
-              </li>`)
-}
-for(let liTemp of liTemps){
-  gallery.insertAdjacentHTML('afterBegin', liTemp);
-}
-
-gallery.addEventListener("click", inConsole);
+const list = liTemps.join("");
+gallery.insertAdjacentHTML('afterBegin', list);
 
 
-function inConsole(event){
+gallery.addEventListener("click", handleGalleryClick);
+
+
+function handleGalleryClick(event){
   event.preventDefault()
+
+  
   if(event.target.dataset.source){
     const instance = basicLightbox.create(`
     <img src="${event.target.dataset.source}" width="800" height="600">
-    `)
+    `, 
+    {
+      onShow: (instance) => {
+        document.addEventListener("keydown", closeModalESC);
 
-    instance.show()
-
-  
-    document.addEventListener("keydown", (e) => {
+      },
+      onClose: () => {
+        document.removeEventListener("keydown", closeModalESC);
+      }
+    });
+    instance.show();
+    function closeModalESC(e){
       if (e.code == "Escape") {
         instance.close();
-       }
-    });
+      }
+    };
   }
     
 }
+
+
 
 
 
